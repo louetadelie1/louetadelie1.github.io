@@ -1,34 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>3Dmol Viewer</title>
-    <!-- Include the 3Dmol.js library -->
-    <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
-</head>
-<body> 
-    <!-- Create a container for the 3Dmol viewer -->
-    <div id="viewer" style="width: 800px; height: 600px; position: relative;"></div>
-    <script>
-// <!-- Until this point, pas touche! This is normal html format  -->
+<html>
+<body>
 
-        // Initialize the 3Dmol viewer
-        var viewer = $3Dmol.createViewer("viewer", {defaultcolors: $3Dmol.rasmolElementColors});
-        
-// <!-- If youre gonna play, do it under here  -->
+<p><b>This text is bold</b></p>
+<p><i>This text is italic</i></p>
+<p>This is<sub> subscript</sub> and <sup>superscript</sup></p>
 
-        // Download and display the PDB structure with ID 2n4f
-        $3Dmol.download("pdb:2n4f", viewer, {multimodel: true, frames: true}, function() {
-            viewer.setStyle({cartoon: {color: 'black'}});
-            viewer.zoomTo();
-            viewer.setStyle({frame: -1}, {cartoon: {color: 'blue'}});
-            viewer.animate({loop: "forward", reps: 1});
-            viewer.render();
-        });
-
-// <!-- Until here, now stop!  -->
-
-    </script>
 </body>
 </html>
-
