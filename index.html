@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3Dmol.js with Speed Control</title>
+    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+</head>
+<body>
+    <p><b>ABETA42 with original G5 ligand</b></p>
+    <p>Using the parameters - aromacity, rg, hydrophobicity - as prediction determinants</p>
+    <p><i>E_pred=intercept_ + coef_[0] * x1 + coef_[1] * x2+coef_[2]*x3</i></p>
+
+    <div id="container" style="width: 800px; height: 600px; position: relative;"></div>
+    <div style="margin-top: 20px;">
+        <label for="speedRange">Animation Speed:</label>
+        <input type="range" id="speedRange" min="1" max="200" value="20">
+        <span id="speedValue">20</span> ms/frame
+    </div>
+    <script>
+        const pdbPath = 'pdb_files/';
+        const residHexSave = 'resid_hex.json';
+
+        const numPdb = 50;
+        let viewer = $3Dmol.createViewer("container", {
+            defaultcolors: $3Dmol.rasmolElementColors
+        });
+
+        let pdbData = '';
+
+        // Function to fetch the resid_hex data
+        async function fetchResidHex() {
+            const response = await fetch(residHexSave);
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return await response.json();
+        }
+
+        // Function to fetch PDB files and concatenate their content
+        async function fetchPdbFiles() {
+            for (let i = 1; i < numPdb; i++) {
+                const response = await fetch(pdbPath + `pair${i}.pdb`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const pdbText = await response.text();
+                pdbData += pdbText + '\nENDMDL\n';
+            }
+        }
+
+        // Function to set new style
+        function setNewStyle(viewer, residHex, i) {
+            viewer.setStyle({ frame: -i }, { sphere: { colorscheme: { prop: 'resi', map: residHex[i] } } });
+        }
+
+        // Main function to run the visualization
+        async function runVisualization() {
+            try {
+                const residHex = await fetchResidHex();
+                await fetchPdbFiles();
+
+                viewer.addModel(pdbData, "pdb", { multimodel: true, frames: true });
+                viewer.setStyle({}, { cartoon: { color: 'black' } });
+                viewer.setStyle({ resn: 'lig' }, { sphere: { color: 'black' } });
+
+                viewer.zoomTo();
+
+                for (let i = 0; i < numPdb - 1; i++) {
+                    setNewStyle(viewer, residHex, i);
+                }
+
+                viewer.setStyle({ resn: 'lig' }, { stick: { color: 'black' } });
+                startAnimation(parseInt(document.getElementById('speedRange').value));
+                viewer.render();
+            } catch (error) {
+                console.error('Error during visualization setup:', error);
+            }
+        }
+
+        // Function to start animation with a given speed
+        function startAnimation(speed) {
+            viewer.stopAnimate(); // Stop any existing animation
+            viewer.animate({ interval: speed }); // Start animation with new speed
+        }
+
+        runVisualization();
+
+        // Event listener to update animation speed
+        document.getElementById('speedRange').addEventListener('input', function() {
+            const speed = parseInt(this.value);
+            document.getElementById('speedValue').textContent = speed + ' ms/frame';
+            startAnimation(speed); // Restart animation with new speed
+        });
+    </script>
+</body>
+</html>
+
