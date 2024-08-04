@@ -10,6 +10,7 @@
     <p><b>ABETA42 with original G5 ligand</b></p>
     <p>Using the parameters - aromacity, rg, hydrophobicity - as prediction determinants</p>
     <p><i>E_pred=intercept_ + coef_[0] * x1 + coef_[1] * x2+coef_[2]*x3</i></p>
+    <p><i>700</i></p>
 
     <div id="container" style="width: 800px; height: 600px; position: relative;"></div>
     <div style="margin-top: 20px;">
@@ -21,7 +22,7 @@
         const pdbPath = 'pdb_files/';
         const residHexSave = 'resid_hex_1000.json';
 
-        const numPdb = 500;
+        const numPdb = 700;
         let viewer = $3Dmol.createViewer("container", {
             defaultcolors: $3Dmol.rasmolElementColors
         });
